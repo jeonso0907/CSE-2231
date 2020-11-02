@@ -19,7 +19,6 @@ public final class Statement1Parse1 extends Statement1 {
     /*
      * Private members --------------------------------------------------------
      */
-
     /**
      * Converts {@code c} into the corresponding {@code Condition}.
      *
