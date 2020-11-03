@@ -21,6 +21,7 @@ public final class ExpressionEvaluatorTest {
     }
 
     // TODO - add other (simpler) test cases to help with debugging
+    //Digit-Seq
     @Test
     public void test1() {
         StringBuilder exp = new StringBuilder("0+24=24");
@@ -29,6 +30,7 @@ public final class ExpressionEvaluatorTest {
         assertEquals("=24", exp.toString());
     }
 
+    //Digit
     @Test
     public void test2() {
         StringBuilder exp = new StringBuilder("0+3=3");
@@ -37,6 +39,7 @@ public final class ExpressionEvaluatorTest {
         assertEquals("=3", exp.toString());
     }
 
+    //Term
     @Test
     public void test3() {
         StringBuilder exp = new StringBuilder("4*2=8");
@@ -45,6 +48,7 @@ public final class ExpressionEvaluatorTest {
         assertEquals("=8", exp.toString());
     }
 
+    //Expr
     @Test
     public void test4() {
         StringBuilder exp = new StringBuilder("3+4=7");
@@ -53,6 +57,7 @@ public final class ExpressionEvaluatorTest {
         assertEquals("=7", exp.toString());
     }
 
+    //Factor
     @Test
     public void test5() {
         StringBuilder exp = new StringBuilder("(3+4)*3=21");
