@@ -40,9 +40,11 @@ public final class ExpressionEvaluator {
         assert source != null : "Violation of: source is not null";
 
         // TODO - fill in body
+        int number = Character.digit(source.charAt(0), 10);
+        source.deleteCharAt(0);
 
-        // This line added just to make the program compilable.
-        return 0;
+        return number;
+
     }
 
     /**
@@ -65,10 +67,16 @@ public final class ExpressionEvaluator {
     private static int valueOfDigitSeq(StringBuilder source) {
         assert source != null : "Violation of: source is not null";
 
-        // TODO - fill in body
+        // TODO - fill in the body
+        int digit = 0;
+        String number = "";
+        while (source.length() > 0 && Character.isDigit(source.charAt(0))) {
+            digit = valueOfDigit(source);
+            number += Integer.toString(digit);
+        }
+        digit = Integer.parseInt(number);
 
-        // This line added just to make the program compilable.
-        return 0;
+        return digit;
     }
 
     /**
@@ -93,9 +101,15 @@ public final class ExpressionEvaluator {
         assert source != null : "Violation of: source is not null";
 
         // TODO - fill in body
-
-        // This line added just to make the program compilable.
-        return 0;
+        int result = 0;
+        if (source.charAt(0) == '(') {
+            source.deleteCharAt(0);
+            result = valueOfExpr(source);
+            source.deleteCharAt(0);
+        } else {
+            result = valueOfDigitSeq(source);
+        }
+        return result;
     }
 
     /**
@@ -120,9 +134,19 @@ public final class ExpressionEvaluator {
         assert source != null : "Violation of: source is not null";
 
         // TODO - fill in body
+        int number = valueOfFactor(source);
 
-        // This line added just to make the program compilable.
-        return 0;
+        while (source.length() > 0
+                && (source.charAt(0) == '*' || source.charAt(0) == '/')) {
+            char operation = source.charAt(0);
+            source.deleteCharAt(0);
+            if (operation == '*') {
+                number *= valueOfFactor(source);
+            } else {
+                number /= valueOfFactor(source);
+            }
+        }
+        return number;
     }
 
     /**
@@ -147,9 +171,19 @@ public final class ExpressionEvaluator {
         assert source != null : "Violation of: source is not null";
 
         // TODO - fill in body
+        int number = valueOfTerm(source);
 
-        // This line added just to make the program compilable.
-        return 0;
+        while (source.length() > 0
+                && (source.charAt(0) == '+' || source.charAt(0) == '-')) {
+            char operation = source.charAt(0);
+            source.deleteCharAt(0);
+            if (operation == '+') {
+                number += valueOfTerm(source);
+            } else {
+                number -= valueOfTerm(source);
+            }
+        }
+        return number;
     }
 
     /**
