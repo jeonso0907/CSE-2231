@@ -21,5 +21,43 @@ public final class ExpressionEvaluatorTest {
     }
 
     // TODO - add other (simpler) test cases to help with debugging
+    @Test
+    public void test1() {
+        StringBuilder exp = new StringBuilder("0+24=24");
+        int value = ExpressionEvaluator.valueOfExpr(exp);
+        assertEquals(24, value);
+        assertEquals("=24", exp.toString());
+    }
 
+    @Test
+    public void test2() {
+        StringBuilder exp = new StringBuilder("0+3=3");
+        int value = ExpressionEvaluator.valueOfExpr(exp);
+        assertEquals(3, value);
+        assertEquals("=3", exp.toString());
+    }
+
+    @Test
+    public void test3() {
+        StringBuilder exp = new StringBuilder("4*2=8");
+        int value = ExpressionEvaluator.valueOfExpr(exp);
+        assertEquals(8, value);
+        assertEquals("=8", exp.toString());
+    }
+
+    @Test
+    public void test4() {
+        StringBuilder exp = new StringBuilder("3+4=7");
+        int value = ExpressionEvaluator.valueOfExpr(exp);
+        assertEquals(7, value);
+        assertEquals("=7", exp.toString());
+    }
+
+    @Test
+    public void test5() {
+        StringBuilder exp = new StringBuilder("(3+4)*3=21");
+        int value = ExpressionEvaluator.valueOfExpr(exp);
+        assertEquals(21, value);
+        assertEquals("=21", exp.toString());
+    }
 }
