@@ -216,18 +216,20 @@ public final class BugsWorldVMInterpreter {
                 + "Violation of: pc is the location of an instruction byte code in cp";
 
         // TODO - fill in body
-        int next = pc;
+        int end = 0;
 
-        while (next < cp.length && !isPrimitiveInstructionByteCode(cp[next])) {
-            if (conditionalJumpCondition(wbs, cp[next])) {
-                pc += 2;
+        if (isPrimitiveInstructionByteCode(cp[pc])) {
+            end = pc;
+        } else {
+            if (cp[pc] == Instruction.JUMP.byteCode()) {
+                end = nextPrimitiveInstructionAddress(cp, wbs, cp[pc + 1]);
+            } else if (conditionalJumpCondition(wbs, cp[pc])) {
+                end = nextPrimitiveInstructionAddress(cp, wbs, pc + 2);
             } else {
-                pc = cp[next + 1];
+                end = nextPrimitiveInstructionAddress(cp, wbs, cp[pc + 1]);
             }
         }
-
-        // This line added just to make the program compilable.
-        return next;
+        return end;
     }
 
     /**
