@@ -217,11 +217,13 @@ public final class Program1GeneratedCode1 extends Program1 {
                 String call = s.disassembleCall();
 
                 if (context.hasKey(call)) {
-                    Map.Pair<String, Statement> m = context.remove(call);
-                    generateCodeForStatement(m.value(), context, cp);
-                    context.add(m.key(), m.value());
-                } else {
                     cp.add(cp.length(), Instruction.valueOf(call).byteCode());
+                } else {
+                    assertElseFatalError(true,
+                            "Undefined instructions and direct and/or indirect use of recursion");
+                    Statement state = context.remove(call).value();
+                    generateCodeForStatement(state, context, cp);
+                    context.add(call, state);
                 }
 
                 s.assembleCall(call);
