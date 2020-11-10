@@ -9,6 +9,7 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 import components.statement.Statement;
 import components.statement.StatementKernel.Condition;
+import components.utilities.Reporter;
 
 /**
  * Layered implementation of secondary method {@code generatedCode} for
@@ -183,7 +184,9 @@ public final class Program1GeneratedCode1 extends Program1 {
 
                 cp.add(cp.length(), conditionalJump(con).byteCode());
                 int conLength = cp.length();
+                cp.add(cp.length(), dummy);
                 generateCodeForStatement(ifBlock, context, cp);
+                cp.add(cp.length(), Instruction.JUMP.byteCode());
                 int jumpLength = cp.length();
                 cp.add(cp.length(), dummy);
                 cp.replaceEntry(conLength, cp.length());
@@ -204,7 +207,7 @@ public final class Program1GeneratedCode1 extends Program1 {
                 int jumpLength = cp.length();
                 cp.add(cp.length(), dummy);
                 generateCodeForStatement(whileBlock, context, cp);
-                cp.add(cp.length(), Instruction.valueOf("JUMP").byteCode());
+                cp.add(cp.length(), Instruction.JUMP.byteCode());
                 cp.add(cp.length(), length);
                 s.assembleWhile(con, whileBlock);
                 cp.replaceEntry(jumpLength, cp.length());
@@ -216,11 +219,14 @@ public final class Program1GeneratedCode1 extends Program1 {
                 // TODO - fill in case
                 String call = s.disassembleCall();
 
-                if (context.hasKey(call)) {
-                    cp.add(cp.length(), Instruction.valueOf(call).byteCode());
+                if (call.equals("turnleft") || call.equals("turnright")
+                        || call.equals("move") || call.equals("infect")
+                        || call.equals("skip")) {
+                    cp.add(cp.length(),
+                            Instruction.valueOf(call.toUpperCase()).byteCode());
                 } else {
-                    assertElseFatalError(true,
-                            "Undefined instructions and direct and/or indirect use of recursion");
+                    Reporter.assertElseFatalError(context.hasKey(call),
+                            "Undefined instructions and direct and/or indirect use of recursion.");
                     Statement state = context.remove(call).value();
                     generateCodeForStatement(state, context, cp);
                     context.add(call, state);
@@ -261,6 +267,7 @@ public final class Program1GeneratedCode1 extends Program1 {
         Statement s = this.newBody();
         this.swapBody(s);
         generateCodeForStatement(s, m, cp);
+        cp.add(cp.length(), Instruction.HALT.byteCode());
         this.swapContext(m);
         this.swapBody(s);
         return cp;
