@@ -229,6 +229,7 @@ public final class BugsWorldVMInterpreter {
                 end = nextPrimitiveInstructionAddress(cp, wbs, cp[pc + 1]);
             }
         }
+
         return end;
     }
 
