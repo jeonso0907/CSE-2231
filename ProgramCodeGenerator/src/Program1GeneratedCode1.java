@@ -153,6 +153,13 @@ public final class Program1GeneratedCode1 extends Program1 {
             case BLOCK: {
 
                 // TODO - fill in case
+                Statement position = s.newInstance();
+
+                for (int c = 0; c < s.lengthOfBlock(); c++) {
+                    position = s.removeFromBlock(c);
+                    generateCodeForStatement(position, context, cp);
+                    s.addToBlock(c, position);
+                }
 
                 break;
             }
@@ -170,19 +177,54 @@ public final class Program1GeneratedCode1 extends Program1 {
             case IF_ELSE: {
 
                 // TODO - fill in case
+                Statement ifBlock = s.newInstance();
+                Statement elseBlock = s.newInstance();
+                Condition con = s.disassembleIfElse(ifBlock, elseBlock);
+
+                cp.add(cp.length(), conditionalJump(con).byteCode());
+                int conLength = cp.length();
+                generateCodeForStatement(ifBlock, context, cp);
+                int jumpLength = cp.length();
+                cp.add(cp.length(), dummy);
+                cp.replaceEntry(conLength, cp.length());
+                generateCodeForStatement(elseBlock, context, cp);
+                cp.replaceEntry(jumpLength, cp.length());
+                s.assembleIfElse(con, ifBlock, elseBlock);
 
                 break;
             }
             case WHILE: {
 
                 // TODO - fill in case
+                Statement whileBlock = s.newInstance();
+                Condition con = s.disassembleWhile(whileBlock);
+
+                int length = cp.length();
+                cp.add(cp.length(), conditionalJump(con).byteCode());
+                int jumpLength = cp.length();
+                cp.add(cp.length(), dummy);
+                generateCodeForStatement(whileBlock, context, cp);
+                cp.add(cp.length(), Instruction.valueOf("JUMP").byteCode());
+                cp.add(cp.length(), length);
+                s.assembleWhile(con, whileBlock);
+                cp.replaceEntry(jumpLength, cp.length());
 
                 break;
             }
             case CALL: {
 
                 // TODO - fill in case
+                String call = s.disassembleCall();
 
+                if (context.hasKey(call)) {
+                    Map.Pair<String, Statement> m = context.remove(call);
+                    generateCodeForStatement(m.value(), context, cp);
+                    context.add(m.key(), m.value());
+                } else {
+                    cp.add(cp.length(), Instruction.valueOf(call).byteCode());
+                }
+
+                s.assembleCall(call);
                 break;
             }
             default: {
@@ -212,7 +254,13 @@ public final class Program1GeneratedCode1 extends Program1 {
         Sequence<Integer> cp = new Sequence1L<Integer>();
 
         // TODO - fill in body
-
+        Map<String, Statement> m = this.newContext();
+        this.swapContext(m);
+        Statement s = this.newBody();
+        this.swapBody(s);
+        generateCodeForStatement(s, m, cp);
+        this.swapContext(m);
+        this.swapBody(s);
         return cp;
     }
 
