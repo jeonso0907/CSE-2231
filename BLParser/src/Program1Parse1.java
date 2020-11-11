@@ -1,3 +1,5 @@
+import components.map.Map;
+import components.map.Map.Pair;
 import components.program.Program;
 import components.program.Program1;
 import components.queue.Queue;
@@ -6,6 +8,7 @@ import components.simplereader.SimpleReader1L;
 import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 import components.statement.Statement;
+import components.utilities.Reporter;
 import components.utilities.Tokenizer;
 
 /**
@@ -57,9 +60,36 @@ public final class Program1Parse1 extends Program1 {
                 + "Violation of: <\"INSTRUCTION\"> is proper prefix of tokens";
 
         // TODO - fill in body
+        // Array of primitives
+        String[] primitives = { "move", "turnleft", "turnright", "infect",
+                "skip" };
 
-        // This line added just to make the program compilable.
-        return null;
+        // Check for INSTRUCTION
+        String instr = tokens.dequeue();
+        Reporter.assertElseFatalError(instr.equals("INSTRUCTION"),
+                "INSTRUCTION is missing");
+
+        // Check if the name of instruction is unique
+        String firstName = tokens.dequeue();
+        Reporter.assertElseFatalError(Tokenizer.isIdentifier(firstName),
+                "The name is not unique");
+
+        // Check for IS
+        String is = tokens.dequeue();
+        Reporter.assertElseFatalError(is.equals("IS"), "IS is missing");
+
+        body.parseBlock(tokens);
+
+        // Check for END
+        String end = tokens.dequeue();
+        Reporter.assertElseFatalError(end.equals("END"), "End is missing");
+
+        // Check if the names match
+        String endName = tokens.dequeue();
+        Reporter.assertElseFatalError(firstName.equals(endName),
+                "The names do not match");
+
+        return endName;
     }
 
     /*
@@ -93,6 +123,72 @@ public final class Program1Parse1 extends Program1 {
 
         // TODO - fill in body
 
+        // Check for "PROGRAM"
+        String program = tokens.dequeue();
+        Reporter.assertElseFatalError(program.equals("PROGRAM"),
+                "Error: Keyword \"PROGRAM\" expected, found: \"" + program
+                        + "\"");
+
+        // Check if the name is unique
+        String programName = tokens.dequeue();
+        Reporter.assertElseFatalError(Tokenizer.isIdentifier(programName), "");
+        this.setName(programName);
+
+        // Check for "IS"
+        String is = tokens.dequeue();
+        Reporter.assertElseFatalError(is.equals("IS"),
+                "Error: Keyword \"IS\" expected, found: \"" + is + "\"");
+
+        //Map contains all Instructions, could be empty.
+        Map<String, Statement> ctxt = this.newContext();
+
+        //Either Instruction or Begin
+        String instr = tokens.front();
+
+        while (instr.equals("INSTRUCTION")) {
+            Statement body = this.newBody();
+            String startName = parseInstruction(tokens, body);
+            for (Pair<String, Statement> x : ctxt) {
+
+                Reporter.assertElseFatalError(!x.key().equals(startName),
+                        "Error: Instruction \"" + startName
+                                + "\" cannot be already defined");
+
+            }
+            ctxt.add(startName, body);
+            instr = tokens.front();
+
+        }
+        this.swapContext(ctxt);
+
+        // Check for "BEGIN"
+        Reporter.assertElseFatalError(instr.equals("BEGIN"),
+                "Error: Keyword \"BEGIN\" expected, found: \"" + instr + "\"");
+
+        String startInstr = tokens.dequeue();
+        Statement body = this.newBody();
+        body.parseBlock(tokens);
+        this.swapBody(body);
+
+        String end = tokens.dequeue();
+
+        // Check for "END"
+        Reporter.assertElseFatalError(end.equals("END"),
+                "Error: Keyword \"END\" expected, found: \"" + end + "\"");
+
+        String endProgramName = tokens.dequeue();
+
+        // Check if the names are equal
+        Reporter.assertElseFatalError(endProgramName.equals(programName),
+                "Error: IDENTIFIER \"" + endProgramName
+                        + "\" at end of instruction \"" + programName
+                        + "\" must eqaul instruction name");
+
+        //Checks for end of program.
+        Reporter.assertElseFatalError(
+                tokens.front().equals("### END OF INPUT ###"),
+                "Error: END-OF-INPUT expected, found: " + "\"" + tokens.front()
+                        + "\"");
     }
 
     /*
