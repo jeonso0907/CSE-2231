@@ -12,7 +12,7 @@ import components.utilities.Tokenizer;
  * Layered implementation of secondary methods {@code parse} and
  * {@code parseBlock} for {@code Statement}.
  *
- * @author Put your name here
+ * @author Sooyoung Jeon and Kevin Lim
  *
  */
 public final class Statement1Parse1 extends Statement1 {
@@ -63,47 +63,47 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0 && tokens.front().equals("IF") : ""
                 + "Violation of: <\"IF\"> is proper prefix of tokens";
 
-        // TODO - fill in body
-        String tokenIf = tokens.dequeue();
+        // Check for the name of the condition and if it is true, then make it into a condition
+        String ifState = tokens.dequeue();
+        String con = tokens.dequeue();
+        Reporter.assertElseFatalError(Tokenizer.isCondition(con),
+                "Not a right name of a condition after IF");
+        Condition ifCon = parseCondition(con);
 
-        Reporter.assertElseFatalError(Tokenizer.isCondition(tokens.front()),
-                "Error: Violation of condition after IF not a valid condition");
-        Condition conditionIf = parseCondition(tokens.dequeue());
+        // Check for THEN
+        String thenState = tokens.dequeue();
+        Reporter.assertElseFatalError(thenState.equals("THEN"),
+                "THEN is not found");
 
-        Reporter.assertElseFatalError(tokens.front().equals("THEN"),
-                "Error: Expected THEN, found: " + "\"" + tokens.front() + "\"");
-        String thenToken = tokens.dequeue();
+        // Make a new Statement for IF
+        Statement newIf = s.newInstance();
+        newIf.parseBlock(tokens);
 
-        Statement ifStatement = s.newInstance();
-        ifStatement.parseBlock(tokens);
-
+        // Check for ELSE or END
         Reporter.assertElseFatalError(
                 tokens.front().equals("ELSE") || tokens.front().equals("END"),
-                "Error: Expected ELSE or END, found " + tokens.front());
+                "ELSE nor END is not found");
 
+        // If ELSE is found, make IFELSE Statement, if not, make IF Statement
         if (tokens.front().equals("ELSE")) {
-
-            String elseToken = tokens.dequeue();
-            Statement elseStatement = s.newInstance();
-            elseStatement.parseBlock(tokens);
-            s.assembleIfElse(conditionIf, ifStatement, elseStatement);
-
-            Reporter.assertElseFatalError(tokens.front().equals("END"),
-                    "Error: Expected END, found: " + "\"" + tokens.front()
-                            + "\"");
-            String endToken = tokens.dequeue();
-
-        } else {
-            s.assembleIf(conditionIf, ifStatement);
-            Reporter.assertElseFatalError(tokens.front().equals("END"),
-                    "Error: Expected END, found: " + "\"" + tokens.front()
-                            + "\"");
+            String elseState = tokens.dequeue();
+            Statement newElse = s.newInstance();
+            newElse.parseBlock(tokens);
+            s.assembleIfElse(ifCon, newIf, newElse);
             String end = tokens.dequeue();
+            Reporter.assertElseFatalError(end.equals("END"),
+                    "END is not found");
+        } else {
+            s.assembleIf(ifCon, newIf);
+            String end = tokens.dequeue();
+            Reporter.assertElseFatalError(end.equals("END"),
+                    "END is not found");
         }
 
-        String endIfToken = tokens.dequeue();
-        Reporter.assertElseFatalError(endIfToken.equals("IF"),
-                "Error: Expected IF, found " + "\"" + endIfToken + "\"");
+        // Check for IF at the end
+        String endIf = tokens.dequeue();
+        Reporter.assertElseFatalError(endIf.equals("IF"),
+                "IF at the end is not found");
     }
 
     /**
@@ -133,32 +133,30 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0 && tokens.front().equals("WHILE") : ""
                 + "Violation of: <\"WHILE\"> is proper prefix of tokens";
 
-        // TODO - fill in body
-        String whileToken = tokens.dequeue();
+        // Check for WHILE and if the name of condition is right, make a condition
+        String startWhile = tokens.dequeue();
+        String whileCon = tokens.dequeue();
+        Reporter.assertElseFatalError(Tokenizer.isCondition(whileCon),
+                "Not a right name of a condition after WHILE");
+        Condition con = parseCondition(whileCon);
 
-        Reporter.assertElseFatalError(Tokenizer.isCondition(tokens.front()),
-                "Error: Violation of condition after WHILE is not a vlid condition");
+        // Check for DO
+        String doState = tokens.dequeue();
+        Reporter.assertElseFatalError(doState.equals("DO"), "DO is not found");
 
-        Condition whileCondition = parseCondition(tokens.dequeue());
+        // Make a new Statement for WHILE
+        Statement newWhile = s.newInstance();
+        newWhile.parseBlock(tokens);
+        s.assembleWhile(con, newWhile);
 
-        Reporter.assertElseFatalError(tokens.front().equals("DO"),
-                "Error: Expected DO, found: " + tokens.front());
+        // Check for END
+        String end = tokens.dequeue();
+        Reporter.assertElseFatalError(end.equals("END"), "END is not found");
 
-        String doTokenString = tokens.dequeue();
-
-        Statement whileStatement = s.newInstance();
-        whileStatement.parseBlock(tokens);
-        s.assembleWhile(whileCondition, whileStatement);
-
-        Reporter.assertElseFatalError(tokens.front().equals("END"),
-                "Error: Expected END, found: " + "\"" + tokens.front() + "\"");
-
+        // Check for WHILE at the end
         String endWhile = tokens.dequeue();
-
-        Reporter.assertElseFatalError(whileToken.equals("WHILE"),
-                "Error: Does not contain While after END");
-
-        whileToken = tokens.dequeue();
+        Reporter.assertElseFatalError(endWhile.equals(startWhile),
+                "WHILE at the end is not found");
     }
 
     /**
@@ -183,11 +181,9 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0
                 && Tokenizer.isIdentifier(tokens.front()) : ""
                         + "Violation of: identifier string is proper prefix of tokens";
-
-        // TODO - fill in body
+        // Assemble the call
         String call = tokens.dequeue();
         s.assembleCall(call);
-
     }
 
     /*
@@ -211,9 +207,10 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0 : ""
                 + "Violation of: Tokenizer.END_OF_INPUT is a suffix of tokens";
 
-        // TODO - fill in body
+        // Get the identifier
         String identifer = tokens.front();
 
+        // Check if the identifier is IF, WHILE, or something else
         if (identifer.equals("IF")) {
             parseIf(tokens, this);
         } else if (identifer.equals("WHILE")) {
@@ -232,18 +229,16 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0 : ""
                 + "Violation of: Tokenizer.END_OF_INPUT is a suffix of tokens";
 
-        // TODO - fill in body
+        // Make a new Statement
         Statement s = this.newInstance();
 
-        for (int i = 0; !tokens.front().equals("END")
-                && !tokens.front().equals("ELSE")
-                && !tokens.front().equals(Tokenizer.END_OF_INPUT); i++) {
-
+        // If the token is not END_OF_INPUT, END, nor ELSE, then add the block
+        for (int c = 0; !tokens.front().equals(Tokenizer.END_OF_INPUT)
+                && !tokens.front().equals("END")
+                && !tokens.front().equals("ELSE"); c++) {
             s.parse(tokens);
-            this.addToBlock(i, s);
-
+            this.addToBlock(c, s);
         }
-
     }
 
     /*
