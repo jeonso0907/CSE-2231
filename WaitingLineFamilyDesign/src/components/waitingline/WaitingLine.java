@@ -5,23 +5,8 @@ package components.waitingline;
  *
  * @param <T>
  *            type of {@code WaitingLine} entries
- * @mathdefinitions <pre>
- * IS_TOTAL_PREORDER (
- *   r: binary relation on T
- *  ) : boolean is
- *  for all x, y, z: T
- *   ((r(x, y) or r(y, x))  and
- *    (if (r(x, y) and r(y, z)) then r(x, z)))
- *
- * IS_SORTED (
- *   s: string of T,
- *   r: binary relation on T
- *  ) : boolean is
- *  for all x, y: T where (<x, y> is substring of s) (r(x, y))
- * </pre>
  */
 public interface WaitingLine<T> extends WaitingLineKernel<T> {
-
     /**
      * Reports the front of {@code this}.
      *
@@ -33,32 +18,42 @@ public interface WaitingLine<T> extends WaitingLineKernel<T> {
     T front();
 
     /**
-     * Replaces the front of {@code this} with {@code x}, and returns the old
-     * front.
+     * Concatenates ("appends") {@code q} to the end of {@code this}.
      *
-     * @param x
-     *            the new front entry
-     * @return the old front entry
-     * @aliases reference {@code x}
-     * @updates this
-     * @requires this /= <>
-     * @ensures <pre>
-     * <replaceFront> is prefix of #this  and
-     * this = <x> * #this[1, |#this|)
-     * </pre>
-     */
-    T replaceFrontCustomer(T x);
-
-    /**
-     * Combines {@code w} to the end of {@code this}.
-     *
-     * @param w
+     * @param q
      *            the {@code WaitingLine} to be appended to the end of
      *            {@code this}
      * @updates this
-     * @clears w
-     * @ensures this = #this * #w
+     * @clears q
+     * @ensures this = #this * #q
      */
-    void combineCustomer(WaitingLine<T> w);
+    void append(WaitingLine<T> q);
 
+    /**
+     * Reports the value at a given position in {@code this}.
+     *
+     * @param pos
+     *            the index of which the value will be returned
+     * @return the value of entry at {@code pos}
+     * @requires 0 <= pos < |this|
+     * @ensures <pre>
+    * <positionVal> is valid entry of this
+    * </pre>
+     */
+    T positionVal(int pos);
+
+    /**
+     * Removes a given entry that is known to be in {@code this}.
+     *
+     * @param x
+     *            the entry to be removed.
+     * @return the entry removed
+     * @updates this
+     * @requires #this contains {@code x}
+     * @ensures <pre>
+    * <remove> is contained in #this and
+    * this contains all entries besides the removed entry in the same order.
+    * </pre>
+     */
+    T remove(T x);
 }
