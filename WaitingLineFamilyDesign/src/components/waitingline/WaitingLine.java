@@ -50,14 +50,15 @@ public interface WaitingLine<T> extends WaitingLineKernel<T> {
     T replaceFrontCustomer(T x);
 
     /**
-     * Concatenates ("appends") {@code q} to the end of {@code this}.
+     * Combines {@code w} to the end of {@code this}.
      *
-     * @param q
-     *            the {@code Queue} to be appended to the end of {@code this}
+     * @param w
+     *            the {@code WaitingLine} to be appended to the end of
+     *            {@code this}
      * @updates this
-     * @clears q
-     * @ensures this = #this * #q
+     * @clears w
+     * @ensures this = #this * #w
      */
-    void combineCustomer(WaitingLine<T> q);
+    void combineCustomer(WaitingLine<T> w);
 
 }
