@@ -1,0 +1,15 @@
+IF next-is-wall THEN
+    turnleft
+    WHILE true DO
+        move
+        turnleft
+        turnleft
+        infect
+        turnright
+        move
+    END WHILE
+ELSE
+    skip
+END IF
+IDontKnow
+ThisDoesNotBelongHere

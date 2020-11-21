@@ -63,8 +63,9 @@ public final class Statement1Parse1 extends Statement1 {
         assert tokens.length() > 0 && tokens.front().equals("IF") : ""
                 + "Violation of: <\"IF\"> is proper prefix of tokens";
 
-        // Check for the name of the condition and if it is true, then make it into a condition
-        String ifState = tokens.dequeue();
+        // Check for the name of the condition and if it is true,
+        // then make it into a condition
+        tokens.dequeue();
         String con = tokens.dequeue();
         Reporter.assertElseFatalError(Tokenizer.isCondition(con),
                 "Not a right name of a condition after IF");
@@ -86,7 +87,7 @@ public final class Statement1Parse1 extends Statement1 {
 
         // If ELSE is found, make IFELSE Statement, if not, make IF Statement
         if (tokens.front().equals("ELSE")) {
-            String elseState = tokens.dequeue();
+            tokens.dequeue();
             Statement newElse = s.newInstance();
             newElse.parseBlock(tokens);
             s.assembleIfElse(ifCon, newIf, newElse);

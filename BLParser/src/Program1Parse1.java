@@ -157,7 +157,7 @@ public final class Program1Parse1 extends Program1 {
                 "BEGIN is not found");
 
         // Swaps the body
-        String startInstr = tokens.dequeue();
+        tokens.dequeue();
         Statement body = this.newBody();
         body.parseBlock(tokens);
         this.swapBody(body);

@@ -1,0 +1,3 @@
+WHILE true DO
+  not-a-real-call
+END WHILE

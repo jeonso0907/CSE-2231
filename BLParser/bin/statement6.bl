@@ -1,0 +1,11 @@
+IF next-is-not-enemy THEN
+  END IF
+  IF instruction THEN
+    turnleft
+    infect
+  ELSE
+    hello
+    turnright
+    howareyou
+  END IF
+  skip
