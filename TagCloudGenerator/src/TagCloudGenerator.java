@@ -1,4 +1,3 @@
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -22,7 +21,7 @@ import components.simplewriter.SimpleWriter1L;
  * counts in a table. Generate the final HTML and save it with a name given by
  * the user.
  *
- * @author Sooyoung Jeon
+ * @author Sooyoung Jeon and Kevin Lim
  */
 public final class TagCloudGenerator {
 
@@ -38,15 +37,24 @@ public final class TagCloudGenerator {
      * @author Sooyoung Jeon and Kevin Lim
      *
      */
-    private static class StringLT implements Comparator<String>, Serializable {
-
-        // Serial number
-        private static final long serialVersionUID = -5811319454240625460L;
+    private static class OrderValue
+            implements Comparator<Map.Pair<String, Integer>> {
 
         @Override
-        public int compare(String o1, String o2) {
+        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
             // Compare the words insensitively
-            return (o1.toLowerCase()).compareTo(o2.toLowerCase());
+            return (o1.key().compareToIgnoreCase(o2.key()));
+        }
+
+    }
+
+    private static class OrderKey
+            implements Comparator<Map.Pair<String, Integer>> {
+
+        @Override
+        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
+            // Compare the words insensitively
+            return (o1.value().compareTo(o2.value()));
         }
     }
 
