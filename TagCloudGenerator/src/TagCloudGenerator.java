@@ -48,7 +48,6 @@ public final class TagCloudGenerator {
             // Compare the words insensitively
             return (o1.toLowerCase()).compareTo(o2.toLowerCase());
         }
-
     }
 
     /**
@@ -84,6 +83,7 @@ public final class TagCloudGenerator {
             }
             wordsQueue.enqueue(s);
         }
+        Set<String> s = new Set1L<>();
 
         in.close();
 
@@ -275,11 +275,11 @@ public final class TagCloudGenerator {
 
         // Prompt the user to type the input file
         out.print("Enter the name of the input file: ");
-        String fileName = in.nextLine();
+        String fileName = "data/importance.txt";
 
         // Prompt the user to type the name of the output file
-        out.print("Enter the name of the file to print out: ");
-        String outFile = in.nextLine();
+//        out.print("Enter the name of the file to print out: ");
+//        String outFile = in.nextLine();
 
         // Generate the queue words from the input file
         Queue<String> wordsQueue = wordsInput(fileName);
@@ -290,11 +290,12 @@ public final class TagCloudGenerator {
         // Generate the map with the word and its count
         // Count the same words with different case as a same word
         Map<String, Integer> wordsMap = wordCounter(wordsQueue);
+        out.println(wordsMap);
 
         // Get the top 100 words from the map
 
         // Generate the final HTML file with a name given by the user
-        htmlGenerator(fileName, wordsQueue, wordsMap, outFile);
+//        htmlGenerator(fileName, wordsQueue, wordsMap, outFile);
 
         in.close();
         out.close();
