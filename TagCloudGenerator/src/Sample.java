@@ -116,15 +116,15 @@ public final class Sample {
         return wordsMap;
     }
 
-    public static Queue<String> sortCount(Map<String, Integer> wordsMap) {
+    public static Queue<Integer> sortCount(Map<String, Integer> wordsMap) {
 
-        Comparator countComparator = new countComparator();
+        Comparator<Pair<String, Integer>> countComparator = new countComparator();
 
         Map<String, Integer> sortMap = wordsMap.newInstance();
 
-        Queue<String> sortCountWords = new Queue1L<>();
+        Queue<Integer> maxAndMin = new Queue1L<>();
 
-        SortingMachine<Map.Pair<String, Integer>> sortMachine = new SortingMachine1L(
+        SortingMachine<Map.Pair<String, Integer>> sortMachine = new SortingMachine1L<Pair<String, Integer>>(
                 countComparator);
 
         for (Pair<String, Integer> pair : wordsMap) {
@@ -133,26 +133,30 @@ public final class Sample {
         sortMachine.changeToExtractionMode();
 
         for (int i = 0; i < 100; i++) {
+
             Pair<String, Integer> topPair = sortMachine.removeFirst();
             String topWord = topPair.key();
             int topCount = topPair.value();
-            sortCountWords.enqueue(topWord);
+
+            if (i == 0) {
+                maxAndMin.enqueue(topCount);
+            } else if (i == 99) {
+                maxAndMin.enqueue(topCount);
+            }
+
             sortMap.add(topWord, topCount);
         }
         wordsMap.transferFrom(sortMap);
 
-        return sortCountWords;
+        return maxAndMin;
     }
 
-    public static Queue<String> sortWord(Map<String, Integer> wordsMap) {
+    public static SortingMachine<Map.Pair<String, Integer>> sortWord(
+            Map<String, Integer> wordsMap) {
 
-        Comparator countComparator = new wordComparator();
+        Comparator<Pair<String, Integer>> countComparator = new wordComparator();
 
-        Map<String, Integer> sortMap = wordsMap.newInstance();
-
-        Queue<String> sortedWords = new Queue1L<>();
-
-        SortingMachine<Map.Pair<String, Integer>> sortMachine = new SortingMachine1L(
+        SortingMachine<Map.Pair<String, Integer>> sortMachine = new SortingMachine1L<Pair<String, Integer>>(
                 countComparator);
 
         for (Pair<String, Integer> pair : wordsMap) {
@@ -160,17 +164,78 @@ public final class Sample {
         }
         sortMachine.changeToExtractionMode();
 
-        for (Pair<String, Integer> pair : sortMachine) {
+        return sortMachine;
+    }
 
-            String word = pair.key();
-            int count = pair.value();
-            sortedWords.enqueue(word);
-            sortMap.add(word, count);
+    public static void header(SimpleWriter out, String inputFile) {
+
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Top 100 words in " + inputFile + "</title>");
+        out.println("<link href=\"http://web.cse.ohio-state.edu/software/2231/"
+                + "web-sw2/assignments/projects/tag-cloud-generator/data/"
+                + "tagcloud.css\" rel=\"stylesheet\" type=\"text/css\">");
+        out.println("</head>");
+
+    }
+
+    public static void body(SimpleWriter out, String inputFile,
+            Queue<Integer> maxAndMin,
+            SortingMachine<Map.Pair<String, Integer>> sortedWords) {
+
+        int average = 0;
+        int max = maxAndMin.dequeue();
+        int min = maxAndMin.dequeue();
+        int difference = max - min;
+        for (Map.Pair<String, Integer> word : sortedWords) {
+            average += word.value();
+        }
+        average /= 100;
+
+        out.println("<body data-new-gr-c-s-check-loaded=\"14.984.0\" "
+                + "data-gr-ext-installed>");
+        out.println("<h2>Top 100 words in " + inputFile + "</h2>");
+        out.println("<hr>");
+        out.println("<div class=\"cdiv\">");
+        out.println("<p class=\"cbox\">");
+
+        for (Map.Pair<String, Integer> wordAndCount : sortedWords) {
+            String word = wordAndCount.key();
+            int count = wordAndCount.value();
+
+            int fontSize = 38 * (count - min);
+            fontSize /= difference;
+            fontSize += 11;
+
+//            double fontSize = (double) (count * 5) / average;
+//            fontSize += 11;
+//            if (fontSize < 11) {
+//                fontSize = 11;
+//            } else if (fontSize > 48) {
+//                fontSize = 48;
+//            }
+
+            out.println("<span style=\"cursor:default\"" + "class=\"f"
+                    + fontSize + "\"" + "title=\"count: " + count + "\">" + word
+                    + "</span>");
         }
 
-        wordsMap.transferFrom(sortMap);
+        out.println("</p>");
+        out.println("</div>");
+        out.println("</body>");
+        out.println("</html>");
 
-        return sortedWords;
+    }
+
+    public static void htmlGenerator(String outputFile, String inputFile,
+            Queue<Integer> maxAndMin,
+            SortingMachine<Map.Pair<String, Integer>> sortedWords) {
+
+        SimpleWriter out = new SimpleWriter1L(outputFile);
+
+        header(out, inputFile);
+        body(out, inputFile, maxAndMin, sortedWords);
+
     }
 
     /**
@@ -188,14 +253,13 @@ public final class Sample {
 
         Map<String, Integer> wordsMap = wordsCount(words);
 
-        sortCount(wordsMap);
+        Queue<Integer> maxAndMin = sortCount(wordsMap);
 
-        Queue<String> sortedWords = sortWord(wordsMap);
+        SortingMachine<Map.Pair<String, Integer>> sortedWords = sortWord(
+                wordsMap);
 
-        for (String s : sortedWords) {
-            out.print(s + " : ");
-            out.print(wordsMap.value(s) + ", ");
-        }
+        htmlGenerator("test.html", "data/importance.txt", maxAndMin,
+                sortedWords);
 
         out.close();
     }
