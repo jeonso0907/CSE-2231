@@ -1,5 +1,8 @@
+import java.util.Iterator;
+
 import components.map.Map;
 import components.naturalnumber.NaturalNumber;
+import components.naturalnumber.NaturalNumber1L;
 import components.set.Set;
 
 /**
@@ -92,10 +95,9 @@ public final class JCFExplorations {
         assert raisePercent > 0 : "Violation of: raisePercent > 0";
 
         // TODO - fill in body
-        for (java.util.Map.Entry<String, Integer> poop : map.entrySet()) {
-            if (poop.getKey().toString().charAt(0) == initial) {
-                poop.setValue(poop.getValue()
-                        + (poop.getValue() * raisePercent) / 100);
+        for (java.util.Map.Entry<String, Integer> x : map.entrySet()) {
+            if (x.getKey().toString().charAt(0) == initial) {
+                x.setValue(x.getValue() + (x.getValue() * raisePercent) / 100);
             }
         }
 
@@ -148,14 +150,13 @@ public final class JCFExplorations {
         assert set != null : "Violation of: set is not null";
 
         // TODO - fill in body
+        Iterator<NaturalNumber> i = set.iterator();
+        NaturalNumber one = new NaturalNumber1L(1);
 
-        for (NaturalNumber x : set) {
-            set.remove(x);
-            incrementAll(set);
-            x.increment();
-            set.add(x);
+        for (int c = 0; c < set.size(); c++) {
+            NaturalNumber temp = i.next();
+            temp.add(one);
         }
-
     }
 
 }
