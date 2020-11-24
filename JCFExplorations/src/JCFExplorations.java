@@ -153,7 +153,7 @@ public final class JCFExplorations {
         Iterator<NaturalNumber> i = set.iterator();
         NaturalNumber one = new NaturalNumber1L(1);
 
-        for (int c = 0; c < set.size(); c++) {
+        while (i.hasNext()) {
             NaturalNumber temp = i.next();
             temp.add(one);
         }
