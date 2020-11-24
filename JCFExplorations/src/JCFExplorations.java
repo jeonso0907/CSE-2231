@@ -42,19 +42,23 @@ public final class JCFExplorations {
         assert raisePercent > 0 : "Violation of: raisePercent > 0";
 
         // TODO - fill in body
-        Map<String, Integer> map2 = map.newInstance();
-        String person = String.valueOf(initial);
-        while (map.size() > 0) {
-            Map.Pair<String, Integer> pair = map.removeAny();
-            if (pair.key().startsWith(person)) {
-                int value = pair.value()
-                        + ((raisePercent * pair.value()) / 100);
-                map2.add(pair.key(), value);
+        Map<String, Integer> temp = map.newInstance();
+        int length = map.size();
+
+        for (int c = 0; c < length; c++) {
+            Map.Pair<String, Integer> person = map.removeAny();
+            String key = person.key();
+            int value = person.value();
+
+            if (key.charAt(0) == initial) {
+                int avg = (raisePercent * value) / 100;
+                value += avg;
+                temp.add(key, value);
             } else {
-                map2.add(pair.key(), pair.value());
+                temp.add(key, value);
             }
         }
-        map.transferFrom(map2);
+        map.transferFrom(temp);
     }
 
     /**
@@ -113,8 +117,9 @@ public final class JCFExplorations {
 
         // TODO - fill in body
         Set<NaturalNumber> s = set.newInstance();
+        int length = set.size();
 
-        for (int c = 0; c < set.size(); c++) {
+        for (int c = 0; c < length; c++) {
             NaturalNumber temp = set.removeAny();
             temp.increment();
             s.add(temp);
