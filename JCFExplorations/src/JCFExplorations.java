@@ -42,21 +42,19 @@ public final class JCFExplorations {
         assert raisePercent > 0 : "Violation of: raisePercent > 0";
 
         // TODO - fill in body
-        Map<String, Integer> temp = map.newInstance();
-
-        for (int c = 0; c < map.size(); c++) {
-            Map.Pair<String, Integer> person = map.removeAny();
-            String key = person.key();
-            int value = person.value();
-
-            if (key.charAt(0) == initial) {
-                value *= raisePercent;
-                temp.add(key, value);
+        Map<String, Integer> map2 = map.newInstance();
+        String person = String.valueOf(initial);
+        while (map.size() > 0) {
+            Map.Pair<String, Integer> pair = map.removeAny();
+            if (pair.key().startsWith(person)) {
+                int value = pair.value()
+                        + ((raisePercent * pair.value()) / 100);
+                map2.add(pair.key(), value);
             } else {
-                temp.add(key, value);
+                map2.add(pair.key(), pair.value());
             }
         }
-        map.transferFrom(temp);
+        map.transferFrom(map2);
     }
 
     /**
@@ -90,12 +88,10 @@ public final class JCFExplorations {
         assert raisePercent > 0 : "Violation of: raisePercent > 0";
 
         // TODO - fill in body
-        for (java.util.Map.Entry<String, Integer> m : map.entrySet()) {
-            String key = m.getKey();
-            int value = m.getValue();
-
-            if (key.charAt(0) == initial) {
-                m.setValue(value * initial);
+        for (java.util.Map.Entry<String, Integer> poop : map.entrySet()) {
+            if (poop.getKey().toString().charAt(0) == initial) {
+                poop.setValue(poop.getValue()
+                        + (poop.getValue() * raisePercent) / 100);
             }
         }
 
@@ -148,7 +144,12 @@ public final class JCFExplorations {
 
         // TODO - fill in body
 
-        for (java.util.)
+        for (NaturalNumber x : set) {
+            set.remove(x);
+            incrementAll(set);
+            x.increment();
+            set.add(x);
+        }
 
     }
 
