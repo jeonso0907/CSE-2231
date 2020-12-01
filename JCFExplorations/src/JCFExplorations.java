@@ -1,8 +1,5 @@
-import java.util.Iterator;
-
 import components.map.Map;
 import components.naturalnumber.NaturalNumber;
-import components.naturalnumber.NaturalNumber1L;
 import components.set.Set;
 
 /**
@@ -150,12 +147,13 @@ public final class JCFExplorations {
         assert set != null : "Violation of: set is not null";
 
         // TODO - fill in body
-        Iterator<NaturalNumber> i = set.iterator();
-        NaturalNumber one = new NaturalNumber1L(1);
+        NaturalNumber[] temp = new NaturalNumber[set.size()];
+        set.toArray(temp);
+        set.clear();
 
-        while (i.hasNext()) {
-            NaturalNumber temp = i.next();
-            temp.add(one);
+        for (int c = 0; c < temp.length; c++) {
+            temp[c].increment();
+            set.add(temp[c]);
         }
     }
 
