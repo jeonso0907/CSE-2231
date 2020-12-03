@@ -281,6 +281,7 @@ public final class TagCloudGenerator {
         SimpleWriter out = new SimpleWriter1L();
         Comparator<String> cs = new StringLT();
 
+        //Hello
         // Prompt the user to type the input file
         out.print("Enter the name of the input file: ");
         String fileName = "data/importance.txt";
